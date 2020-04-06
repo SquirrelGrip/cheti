@@ -1,0 +1,64 @@
+{
+  "common": {
+    "location": "bouncy-castle"
+  },
+  "certificates": [
+    {
+      "name": "RootCA",
+      "type": "root",
+      "generate": true,
+      "overwrite": false,
+      "location": "${common.location}/${name}",
+      "subject": {
+        "cn": "RootCA",
+        "o": "SquirrelGrip",
+        "st": "Singapore",
+        "l": "Singapore",
+        "c": "SG",
+      }
+    },
+    {
+      "name": "SigningCA",
+      "type": "signing",
+      "generate": true,
+      "overwrite": false,
+      "location": "${common.location}/${name}",
+      "issuer": "RootCA",
+      "subject": {
+        "cn": "SigningCA",
+        "o": "SquirrelGrip",
+        "st": "Singapore",
+        "l": "Singapore",
+        "c": "SG",
+      }
+    },
+    {
+      "name": "Server",
+      "type": "server",
+      "generate": true,
+      "overwrite": true,
+      "location": "${common.location}/${name}",
+      "issuer": "SigningCA",
+      "subject": {
+        "cn": "Server"
+      },
+      "altSubject": {
+
+      }
+    },
+    {
+      "name": "Client",
+      "type": "client",
+      "generate": true,
+      "overwrite": true,
+      "location": "${common.location}/${name}",
+      "issuer": "SigningCA",
+      "subject": {
+        "cn": "Client"
+      },
+      "altSubject": {
+
+      }
+    }
+  ]
+}
