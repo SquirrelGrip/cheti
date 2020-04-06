@@ -92,7 +92,7 @@
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
-                        <arg>-jvmTarget=8</arg>
+                        <arg>-XjvmTarget=8</arg>
                     </args>
                 </configuration>
                 <dependencies>
