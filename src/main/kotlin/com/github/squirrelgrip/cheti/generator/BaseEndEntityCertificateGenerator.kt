@@ -1,7 +1,10 @@
 package com.github.squirrelgrip.cheti.generator
 
-import com.github.squirrelgrip.cheti.CertificateKeyPair
-import org.bouncycastle.asn1.x509.*
+import com.github.squirrelgrip.cheti.CertificateLoader
+import com.github.squirrelgrip.cheti.configuration.CertificateConfiguration
+import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier
+import org.bouncycastle.asn1.x509.Extension
+import org.bouncycastle.asn1.x509.KeyUsage
 import org.bouncycastle.cert.jcajce.JcaX509CertificateConverter
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder
 import org.bouncycastle.operator.jcajce.JcaContentSignerBuilder
@@ -14,39 +17,33 @@ import java.security.cert.X509Certificate
 import javax.security.auth.x500.X500Principal
 
 abstract class BaseEndEntityCertificateGenerator(
-    val issuerCertificateKeyPair: CertificateKeyPair
+    certificateLoader: CertificateLoader,
+    certificateConfiguration: CertificateConfiguration
 ) : BaseCertificateGenerator(
-    issuerCertificateKeyPair.certificate.subjectX500Principal
+    certificateLoader,
+    certificateConfiguration
 ) {
-    override fun create(keyPair: KeyPair, subject: X500Principal, altSubject: Array<GeneralName>): X509Certificate {
-        return sign(signingRequest(keyPair, subject), altSubject)
+    override fun create(keyPair: KeyPair): X509Certificate {
+        return sign(signingRequest(keyPair))
     }
 
-    fun sign(pkcS10CertificationRequest: PKCS10CertificationRequest, altSubject: Array<GeneralName>): X509Certificate {
+    fun sign(pkcS10CertificationRequest: PKCS10CertificationRequest): X509Certificate {
         val jcaPKCS10CertificationRequest = JcaPKCS10CertificationRequest(pkcS10CertificationRequest)
-        val subject = X500Principal(jcaPKCS10CertificationRequest.subject.encoded)
-        val serialNumber =
-            generateSerialNumber()
-        val certificateBuilder = generateCertificateBuilder(subject, serialNumber, jcaPKCS10CertificationRequest.publicKey)
-        addExtensions(certificateBuilder, jcaPKCS10CertificationRequest.publicKey,
-            createAuthorityKeyIdentifier(
-                issuerCertificateKeyPair.certificate
-            ), altSubject)
-        return JcaX509CertificateConverter().getCertificate(certificateBuilder.build(JcaContentSignerBuilder(
-            signingAlgorithm
-        ).build(issuerCertificateKeyPair.keyPair.private)))
+        val serialNumber = generateSerialNumber()
+        val certificateBuilder = generateCertificateBuilder(serialNumber, jcaPKCS10CertificationRequest.publicKey)
+        addExtensions(certificateBuilder, jcaPKCS10CertificationRequest.publicKey, createAuthorityKeyIdentifier(getIssuer().certificate))
+        return JcaX509CertificateConverter().getCertificate(certificateBuilder.build(JcaContentSignerBuilder(signingAlgorithm).build(getIssuer().keyPair.private)))
     }
 
-    fun signingRequest(keyPair: KeyPair, subject: X500Principal) =
-        JcaPKCS10CertificationRequestBuilder(subject, keyPair.public).build(JcaContentSignerBuilder(signingAlgorithm).build(keyPair.private))
+    fun signingRequest(keyPair: KeyPair) =
+        JcaPKCS10CertificationRequestBuilder(getSubjectPrincipal(), keyPair.public).build(JcaContentSignerBuilder(signingAlgorithm).build(keyPair.private))
 
     override fun addExtensions(
         certificateBuilder: JcaX509v3CertificateBuilder,
         publicKey: PublicKey,
-        authorityKeyIdentifier: AuthorityKeyIdentifier,
-        altSubject: Array<GeneralName>
+        authorityKeyIdentifier: AuthorityKeyIdentifier
     ) {
-        super.addExtensions(certificateBuilder, publicKey, authorityKeyIdentifier, altSubject)
+        super.addExtensions(certificateBuilder, publicKey, authorityKeyIdentifier)
         certificateBuilder.addExtension(Extension.keyUsage, true, KeyUsage(KeyUsage.keyEncipherment or KeyUsage.digitalSignature or KeyUsage.dataEncipherment))
     }
 
