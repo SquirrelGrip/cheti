@@ -92,8 +92,8 @@
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
-                        <arg>-XjvmTarget=8</arg>
                     </args>
+                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -116,6 +116,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -228,6 +233,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <reportUndocumented>false</reportUndocumented>
                     <sourceDirectories>
                         <sourceDirectory>src/main/kotlin</sourceDirectory>
                     </sourceDirectories>

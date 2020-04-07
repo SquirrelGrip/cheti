@@ -1,20 +1,30 @@
 {
   "common": {
-    "location": "certs"
+    "location": "certs",
+    "validFor": "1H"
   },
   "certificates": [
     {
       "name": "RootCA",
       "type": "ROOT",
       "generate": "ONCE",
-      "location": "certs"
+      "location": "certs",
+      "validFor": "1H",
+      "subject": {
+        "cn": "RootCA"
+      }
     },
     {
       "name": "SigningCA",
       "type": "SIGNING",
       "generate": "ONCE",
       "location": "certs",
-      "issuer": "RootCA"
+      "issuer": "RootCA",
+      "validFor": "1H",
+      "subject": {
+        "cn": "SigningCA"
+      }
+
     }
   ]
 }
