@@ -1,26 +1,12 @@
 package com.github.squirrelgrip.cheti
 
-import com.github.squirrelgrip.cheti.configuration.CertificateConfiguration
-import com.github.squirrelgrip.cheti.configuration.CertificateType
 import com.github.squirrelgrip.cheti.configuration.ChetiConfiguration
-import com.github.squirrelgrip.cheti.generator.BaseCertificateGenerator
-import com.github.squirrelgrip.cheti.generator.RootCertificateGenerator
-import com.github.squirrelgrip.cheti.generator.ServerCertificateGenerator
-import com.github.squirrelgrip.cheti.generator.SigningCertificateGenerator
 import com.github.squirrelgrip.extensions.json.toInstance
-import org.bouncycastle.asn1.x509.GeneralName
-import org.bouncycastle.jce.provider.BouncyCastleProvider
-import org.bouncycastle.util.io.pem.PemObject
-import org.bouncycastle.util.io.pem.PemReader
 import java.io.File
-import java.io.FileInputStream
-import java.io.FileReader
 import java.net.InetAddress
-import java.security.*
+import java.security.KeyStore
+import java.security.PrivateKey
 import java.security.cert.Certificate
-import java.security.cert.CertificateFactory.getInstance
-import java.security.cert.X509Certificate
-import java.security.spec.PKCS8EncodedKeySpec
 
 
 object Cheti {
@@ -54,6 +40,15 @@ fun main(args: Array<String>) {
     val certificateLoader = CertificateLoader(chetiConfiguration.common)
     chetiConfiguration.certificates.forEach {
         certificateLoader.load(it)
+    }
+    val chainLoader = ChainLoader(certificateLoader)
+    chetiConfiguration.chains.forEach {
+        chainLoader.load(it)
+    }
+
+    val keyStoreLoader = KeyStoreLoader(certificateLoader, chainLoader)
+    chetiConfiguration.keystores.forEach {
+        keyStoreLoader.load(it)
     }
 }
 
