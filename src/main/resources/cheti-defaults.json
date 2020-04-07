@@ -1,64 +1,30 @@
 {
   "common": {
-    "location": "bouncy-castle"
+    "location": "certs",
+    "validFor": "1H"
   },
   "certificates": [
     {
       "name": "RootCA",
-      "type": "root",
-      "generate": true,
-      "overwrite": false,
-      "location": "${common.location}/${name}",
+      "type": "ROOT",
+      "generate": "ONCE",
+      "location": "certs",
+      "validFor": "1H",
       "subject": {
-        "cn": "RootCA",
-        "o": "SquirrelGrip",
-        "st": "Singapore",
-        "l": "Singapore",
-        "c": "SG",
+        "cn": "RootCA"
       }
     },
     {
       "name": "SigningCA",
-      "type": "signing",
-      "generate": true,
-      "overwrite": false,
-      "location": "${common.location}/${name}",
+      "type": "SIGNING",
+      "generate": "ONCE",
+      "location": "certs",
       "issuer": "RootCA",
+      "validFor": "1H",
       "subject": {
-        "cn": "SigningCA",
-        "o": "SquirrelGrip",
-        "st": "Singapore",
-        "l": "Singapore",
-        "c": "SG",
+        "cn": "SigningCA"
       }
-    },
-    {
-      "name": "Server",
-      "type": "server",
-      "generate": true,
-      "overwrite": true,
-      "location": "${common.location}/${name}",
-      "issuer": "SigningCA",
-      "subject": {
-        "cn": "Server"
-      },
-      "altSubject": {
 
-      }
-    },
-    {
-      "name": "Client",
-      "type": "client",
-      "generate": true,
-      "overwrite": true,
-      "location": "${common.location}/${name}",
-      "issuer": "SigningCA",
-      "subject": {
-        "cn": "Client"
-      },
-      "altSubject": {
-
-      }
     }
   ]
 }

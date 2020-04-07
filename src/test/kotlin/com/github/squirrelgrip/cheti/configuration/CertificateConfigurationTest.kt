@@ -12,20 +12,22 @@ internal class CertificateConfigurationTest {
     val template = CertificateConfiguration(
         "Test",
         CertificateType.CLIENT,
-        true,
-        true,
-        "target",
+        GenerationType.ALWAYS,
+        "target/certs",
         emptyMap(),
         "issuer",
-        emptyList()
+        "1D",
+        ExtensionsConfiguration()
     )
-    val certificateFile = File("target", "Test.crt")
-    val keyFile = File("target", "Test.key")
+    val certificateFile = File(File("target/certs/Test"), "Test.crt")
+    val keyFile = File(File("target/certs/Test"), "Test.key")
 
     lateinit var testSubject: CertificateConfiguration
 
     @BeforeEach
     fun beforeEach() {
+        certificateFile.parentFile.mkdirs()
+        keyFile.parentFile.mkdirs()
         certificateFile.writeBytes(byteArrayOf())
         keyFile.writeBytes(byteArrayOf())
     }
@@ -44,7 +46,7 @@ internal class CertificateConfigurationTest {
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.crt is not writable on the filesystem.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.crt is not writable on the filesystem.")
     }
 
     @Test
@@ -55,7 +57,7 @@ internal class CertificateConfigurationTest {
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.key is not writable on the filesystem.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.key is not writable on the filesystem.")
     }
 
     @Test
@@ -66,7 +68,7 @@ internal class CertificateConfigurationTest {
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.crt is not readable on the filesystem.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.crt is not readable on the filesystem.")
     }
 
     @Test
@@ -77,7 +79,7 @@ internal class CertificateConfigurationTest {
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.key is not readable on the filesystem.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.key is not readable on the filesystem.")
     }
 
     @Test
@@ -88,7 +90,7 @@ internal class CertificateConfigurationTest {
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.crt is not readable on the filesystem.", "target/Test.crt is not writable on the filesystem.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.crt is not readable on the filesystem.", "target/certs/Test/Test.crt is not writable on the filesystem.")
     }
 
     @Test
@@ -99,27 +101,27 @@ internal class CertificateConfigurationTest {
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.key is not readable on the filesystem.", "target/Test.key is not writable on the filesystem.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.key is not readable on the filesystem.", "target/certs/Test/Test.key is not writable on the filesystem.")
     }
 
     @Test
     fun `validate given certificate file does not exist`() {
         certificateFile.delete()
-        val testSubject = template.copy(generate = false)
+        val testSubject = template.copy(generate = GenerationType.NEVER)
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.crt does not exist and will not be generated.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.crt does not exist and will not be generated.")
     }
 
     @Test
     fun `validate given key file does not exist`() {
         keyFile.delete()
-        val testSubject = template.copy(generate = false)
+        val testSubject = template.copy(generate = GenerationType.NEVER)
 
         val errors = testSubject.validate()
 
-        assertThat(errors).containsExactly("target/Test.key does not exist and will not be generated.")
+        assertThat(errors).containsExactly("target/certs/Test/Test.key does not exist and will not be generated.")
     }
 
     @Test

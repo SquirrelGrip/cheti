@@ -22,14 +22,20 @@ fun X509Certificate.write(writer: Writer) {
     pemWriter.close()
 }
 
+fun X509Certificate.write(file: File) {
+    file.parentFile.mkdirs()
+    this.write(file.toWriter())
+}
+
+fun KeyPair.write(file: File) {
+    file.parentFile.mkdirs()
+    this.write(file.toWriter())
+}
+
 fun KeyPair.write(writer: Writer) {
     val pemWriter = PemWriter(writer)
     pemWriter.writeObject(PemObject("PRIVATE KEY", this.private.encoded))
     pemWriter.close()
-}
-
-fun writer(certName: String, extension: String = "crt"): Writer {
-    return File(certDir(certName), "$certName.$extension").toWriter()
 }
 
 fun certDir(certName: String) = File(rootDir(), certName).apply {

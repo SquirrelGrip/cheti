@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>com.github.squirrelgrip</groupId>
     <artifactId>cheti</artifactId>
-    <version>1.0.0-SNAPSHOT</version>
+    <version>1.0.0</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -38,7 +37,7 @@
 
         <bouncycastle.version>1.64</bouncycastle.version>
         <kotlin.version>1.3.71</kotlin.version>
-        <extensions.version>1.0.6-SNAPSHOT</extensions.version>
+        <extensions.version>1.0.6</extensions.version>
         <junit-jupiter.version>5.6.1</junit-jupiter.version>
         <assertj.version>3.15.0</assertj.version>
     </properties>
@@ -92,8 +91,8 @@
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
-                        <arg>-XjvmTarget=8</arg>
                     </args>
+                    <jvmTarget>1.8</jvmTarget>
                 </configuration>
                 <dependencies>
                     <dependency>
@@ -116,6 +115,11 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -228,6 +232,7 @@
                     </execution>
                 </executions>
                 <configuration>
+                    <reportUndocumented>false</reportUndocumented>
                     <sourceDirectories>
                         <sourceDirectory>src/main/kotlin</sourceDirectory>
                     </sourceDirectories>

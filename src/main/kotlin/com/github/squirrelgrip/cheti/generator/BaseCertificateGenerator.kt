@@ -1,5 +1,9 @@
 package com.github.squirrelgrip.cheti.generator
 
+import com.github.squirrelgrip.cheti.CertificateKeyPair
+import com.github.squirrelgrip.cheti.CertificateLoader
+import com.github.squirrelgrip.cheti.InvalidConfigurationException
+import com.github.squirrelgrip.cheti.configuration.CertificateConfiguration
 import com.github.squirrelgrip.extensions.time.toDate
 import org.bouncycastle.asn1.x500.X500NameBuilder
 import org.bouncycastle.asn1.x500.style.BCStyle
@@ -17,74 +21,63 @@ import java.time.ZoneOffset
 import javax.security.auth.x500.X500Principal
 
 abstract class BaseCertificateGenerator(
-    val issuer: X500Principal
+    val certificateLoader: CertificateLoader,
+    val certificateConfiguration: CertificateConfiguration
 ) {
     init {
-        Security.addProvider(BouncyCastleProvider())
+        if (Security.getProvider(BouncyCastleProvider.PROVIDER_NAME) == null) {
+            Security.addProvider(BouncyCastleProvider())
+        }
     }
 
-    abstract fun create(
-        keyPair: KeyPair,
-        subject: X500Principal,
-        altSubject: Array<GeneralName> = arrayOf()
-    ): X509Certificate
+    fun getIssuer(): CertificateKeyPair = certificateLoader[certificateConfiguration.issuer] ?: throw InvalidConfigurationException()
 
-    abstract fun addAdditionalExtensions(certificateBuilder: JcaX509v3CertificateBuilder)
+    abstract fun create(keyPair: KeyPair): X509Certificate
+
+    open fun addAdditionalExtensions(certificateBuilder: JcaX509v3CertificateBuilder) {
+        certificateConfiguration.extensions?.getExtensions()?.forEach {
+            certificateBuilder.addExtension(it)
+        }
+    }
 
     open fun addExtensions(
         certificateBuilder: JcaX509v3CertificateBuilder,
         publicKey: PublicKey,
-        authorityKeyIdentifier: AuthorityKeyIdentifier,
-        altSubject: Array<GeneralName>
+        authorityKeyIdentifier: AuthorityKeyIdentifier
     ) {
         certificateBuilder.addExtension(Extension.authorityKeyIdentifier, false, authorityKeyIdentifier)
         certificateBuilder.addExtension(Extension.basicConstraints, true, getBasicConstraints())
-        certificateBuilder.addExtension(
-            Extension.subjectKeyIdentifier,
-            false,
-            extensionUtils.createSubjectKeyIdentifier(publicKey)
-        )
-        if (altSubject.isNotEmpty()) {
-            certificateBuilder.addExtension(Extension.subjectAlternativeName, false, GeneralNames(altSubject))
-        }
+        certificateBuilder.addExtension(Extension.subjectKeyIdentifier, false, extensionUtils.createSubjectKeyIdentifier(publicKey))
         addAdditionalExtensions(certificateBuilder)
     }
 
     open fun getBasicConstraints() = BasicConstraints(false)
 
     fun generateCertificateBuilder(
-        subject: X500Principal,
         serialNumber: BigInteger,
         publicKey: PublicKey
     ): JcaX509v3CertificateBuilder {
         val fromDate = Instant.now()
         val tillDate =
-            fromDate.atOffset(ZoneOffset.UTC).plusYears(1).withSecond(0).withMinute(0).withHour(12).toInstant()
+            fromDate.atOffset(ZoneOffset.UTC).plus(certificateConfiguration.validDuration).toInstant()
         return JcaX509v3CertificateBuilder(
-            issuer,
+            getIssuerPrincipal(),
             serialNumber,
             fromDate.toDate(),
             tillDate.toDate(),
-            subject,
+            getSubjectPrincipal(),
             publicKey
         )
     }
+
+    fun getSubjectPrincipal(): X500Principal = generateDistinguishedName(certificateConfiguration.subject)
+
+    open fun getIssuerPrincipal() = getIssuer().certificate.subjectX500Principal
 
     companion object {
         val secureRandom = SecureRandom()
         val signingAlgorithm = "SHA256WITHRSA"
         val extensionUtils = JcaX509ExtensionUtils()
-
-        fun generateDistinguishedName(cn: String) = X500Principal(
-            X500NameBuilder()
-                .addRDN(BCStyle.C, "SG")
-                .addRDN(BCStyle.ST, "Singapore")
-                .addRDN(BCStyle.L, "Singapore")
-                .addRDN(BCStyle.O, "SquirrelGrip")
-//            .addRDN(BCStyle.OU, "SG")
-                .addRDN(BCStyle.CN, cn)
-                .build().encoded
-        )
 
         fun createAuthorityKeyIdentifier(certificate: X509Certificate) =
             extensionUtils.createAuthorityKeyIdentifier(
@@ -93,7 +86,7 @@ abstract class BaseCertificateGenerator(
                 certificate.serialNumber
             )
 
-        fun getCertificate(
+        fun buildCertificate(
             certificateBuilder: JcaX509v3CertificateBuilder,
             privateKey: PrivateKey
         ) =
@@ -130,19 +123,6 @@ abstract class BaseCertificateGenerator(
                     }
             return X500Principal(builder.build().encoded)
         }
-
-        fun generateDistinguishedName(
-            subject: Map<String, String>,
-            certName: String
-        ): X500Principal {
-            return if (subject.isEmpty()) {
-                generateDistinguishedName(certName)
-            } else {
-                generateDistinguishedName(subject)
-            }
-        }
-
-
 
     }
 

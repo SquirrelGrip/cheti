@@ -1,108 +1,185 @@
 package com.github.squirrelgrip.cheti
 
+import com.github.squirrelgrip.cheti.configuration.*
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
-import org.bouncycastle.asn1.ASN1OctetString
-import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier
 import org.bouncycastle.asn1.x509.Extension
-import org.bouncycastle.asn1.x509.SubjectKeyIdentifier
+import org.bouncycastle.asn1.x509.GeneralName
 import org.junit.jupiter.api.Test
-import java.security.cert.X509Certificate
 
 
 internal class ChetiTest {
-    @Test
-    fun `verify created root`() {
-        val expectedSubject = "CN=RootCA,O=SquirrelGrip,L=Singapore,ST=Singapore,C=SG"
+    private val commonConfiguration: CommonConfiguration = CommonConfiguration(
+        "."
+    )
+    val testSubject: CertificateLoader = CertificateLoader(commonConfiguration)
 
-        val testSubject = Cheti.getRootCertificate()
-
-        testSubject.certificate.checkValidity()
-        assertThat(testSubject.certificate.version).isEqualTo(3)
-
-        assertThat(testSubject.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
-        assertThat(testSubject.certificate.issuerX500Principal.name).isEqualTo(expectedSubject)
-
-        assertThat(testSubject.certificate.basicConstraints).isEqualTo(2)
-        assertThat(testSubject.certificate.keyUsage).isEqualTo(arrayOf(true, false, false, false, false, true, false, false, false))
-
-        assertThat(testSubject.certificate.criticalExtensionOIDs).hasSize(2)
-        assertThat(testSubject.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(Extension.subjectKeyIdentifier.id, Extension.authorityKeyIdentifier.id)
-
-        assertThat(testSubject.certificate.subjectAlternativeNames).isNull()
-        assertThat(testSubject.certificate.extendedKeyUsage).isNull()
-    }
-
-    @Test
-    fun `verify created root using subject`() {
-        val expectedSubject = "CN=cn,O=organisation,L=location,ST=state,C=c"
-
-        val testSubject = Cheti.getRootCertificate("CA", mapOf(
+    val location = "target/certs"
+    val rootCertificateConfiguration = CertificateConfiguration(
+        "RootCA",
+        CertificateType.ROOT,
+        GenerationType.ONCE,
+        location,
+        mapOf(
             "c" to "c",
             "st" to "state",
             "l" to "location",
             "o" to "organisation",
-            "cn" to "cn"
-        ))
+            "cn" to "RootCA"
+        ),
+        "",
+        "1D",
+        ExtensionsConfiguration()
+    )
+    val signingCertificateConfiguration = CertificateConfiguration(
+        "SigningCA",
+        CertificateType.SIGNING,
+        GenerationType.ONCE,
+        location,
+        mapOf(
+            "c" to "c",
+            "st" to "state",
+            "l" to "location",
+            "o" to "organisation",
+            "cn" to "SigningCA"
+        ),
+        "RootCA",
+        "1D",
+        ExtensionsConfiguration()
+    )
+    val serverCertificateConfiguration = CertificateConfiguration(
+        "Server",
+        CertificateType.SERVER,
+        GenerationType.ONCE,
+        location,
+        mapOf(
+            "cn" to "Server"
+        ),
+        "SigningCA",
+        "1D",
+        ExtensionsConfiguration(
+            AltSubjectExtensionConfiguration(
+                false, arrayOf(
+                    AltSubject(AltSubjectType.IPAddress, "10.0.1.200"),
+                    AltSubject(AltSubjectType.DNSName, "macbook-pro.local")
+                )
+            )
+        )
+    )
 
-        testSubject.certificate.checkValidity()
-        assertThat(testSubject.certificate.version).isEqualTo(3)
+    @Test
+    fun `verify created root`() {
+        val expectedSubject = "CN=RootCA,O=organisation,L=location,ST=state,C=c"
+        val certificateKeyPair = testSubject.load(rootCertificateConfiguration)
 
-        assertThat(testSubject.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
-        assertThat(testSubject.certificate.issuerX500Principal.name).isEqualTo(expectedSubject)
+        certificateKeyPair.certificate.checkValidity()
+        assertThat(certificateKeyPair.certificate.version).isEqualTo(3)
 
-        assertThat(testSubject.certificate.basicConstraints).isEqualTo(2)
-        assertThat(testSubject.certificate.keyUsage).isEqualTo(arrayOf(true, false, false, false, false, true, false, false, false))
+        assertThat(certificateKeyPair.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
+        assertThat(certificateKeyPair.certificate.issuerX500Principal.name).isEqualTo(expectedSubject)
 
-        assertThat(testSubject.certificate.criticalExtensionOIDs).hasSize(2)
-        assertThat(testSubject.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(Extension.subjectKeyIdentifier.id, Extension.authorityKeyIdentifier.id)
+        assertThat(certificateKeyPair.certificate.basicConstraints).isEqualTo(2)
+        assertThat(certificateKeyPair.certificate.keyUsage).isEqualTo(
+            arrayOf(
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false
+            )
+        )
 
-        assertThat(testSubject.certificate.subjectAlternativeNames).isNull()
-        assertThat(testSubject.certificate.extendedKeyUsage).isNull()
+        assertThat(certificateKeyPair.certificate.criticalExtensionOIDs).hasSize(2)
+        assertThat(certificateKeyPair.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(
+            Extension.subjectKeyIdentifier.id,
+            Extension.authorityKeyIdentifier.id
+        )
+
+        assertThat(certificateKeyPair.certificate.subjectAlternativeNames).isNull()
+        assertThat(certificateKeyPair.certificate.extendedKeyUsage).isNull()
     }
 
     @Test
     fun `verify created signing`() {
-        val expectedSubject = "CN=SigningCA,O=SquirrelGrip,L=Singapore,ST=Singapore,C=SG"
-        val expectedIssuer = "CN=RootCA,O=SquirrelGrip,L=Singapore,ST=Singapore,C=SG"
+        val expectedSubject = "CN=SigningCA,O=organisation,L=location,ST=state,C=c"
+        val expectedIssuer = "CN=RootCA,O=organisation,L=location,ST=state,C=c"
 
-        val testSubject = Cheti.getSigningCertificate(Cheti.getRootCertificate())
+        testSubject.load(rootCertificateConfiguration)
+        val certificateKeyPair = testSubject.load(signingCertificateConfiguration)
 
-        testSubject.certificate.checkValidity()
-        assertThat(testSubject.certificate.version).isEqualTo(3)
+        certificateKeyPair.certificate.checkValidity()
+        assertThat(certificateKeyPair.certificate.version).isEqualTo(3)
 
-        assertThat(testSubject.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
-        assertThat(testSubject.certificate.issuerX500Principal.name).isEqualTo(expectedIssuer)
+        assertThat(certificateKeyPair.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
+        assertThat(certificateKeyPair.certificate.issuerX500Principal.name).isEqualTo(expectedIssuer)
 
-        assertThat(testSubject.certificate.basicConstraints).isEqualTo(1)
-        assertThat(testSubject.certificate.keyUsage).isEqualTo(arrayOf(true, false, false, false, false, true, false, false, false))
+        assertThat(certificateKeyPair.certificate.basicConstraints).isEqualTo(1)
+        assertThat(certificateKeyPair.certificate.keyUsage).isEqualTo(
+            arrayOf(
+                true,
+                false,
+                false,
+                false,
+                false,
+                true,
+                false,
+                false,
+                false
+            )
+        )
 
-        assertThat(testSubject.certificate.criticalExtensionOIDs).hasSize(2)
-        assertThat(testSubject.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(Extension.subjectKeyIdentifier.id, Extension.authorityKeyIdentifier.id)
+        assertThat(certificateKeyPair.certificate.criticalExtensionOIDs).hasSize(2)
+        assertThat(certificateKeyPair.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(
+            Extension.subjectKeyIdentifier.id,
+            Extension.authorityKeyIdentifier.id
+        )
 
-        assertThat(testSubject.certificate.subjectAlternativeNames).isNull()
-        assertThat(testSubject.certificate.extendedKeyUsage).isNull()
+        assertThat(certificateKeyPair.certificate.subjectAlternativeNames).isNull()
+        assertThat(certificateKeyPair.certificate.extendedKeyUsage).isNull()
     }
 
     @Test
     fun `verify created server`() {
-        val expectedSubject = "CN=Server,O=SquirrelGrip,L=Singapore,ST=Singapore,C=SG"
-        val expectedIssuer = "CN=SigningCA,O=SquirrelGrip,L=Singapore,ST=Singapore,C=SG"
+        val expectedSubject = "CN=Server"
+        val expectedIssuer = "CN=SigningCA,O=organisation,L=location,ST=state,C=c"
 
-        val testSubject = Cheti.getServerCertificate(Cheti.getSigningCertificate(Cheti.getRootCertificate()), "Server")
+        testSubject.load(rootCertificateConfiguration)
+        testSubject.load(signingCertificateConfiguration)
+        val certificateKeyPair = testSubject.load(serverCertificateConfiguration)
 
-        testSubject.certificate.checkValidity()
-        assertThat(testSubject.certificate.version).isEqualTo(3)
+        certificateKeyPair.certificate.checkValidity()
+        assertThat(certificateKeyPair.certificate.version).isEqualTo(3)
 
-        assertThat(testSubject.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
-        assertThat(testSubject.certificate.issuerX500Principal.name).isEqualTo(expectedIssuer)
+        assertThat(certificateKeyPair.certificate.subjectX500Principal.name).isEqualTo(expectedSubject)
+        assertThat(certificateKeyPair.certificate.issuerX500Principal.name).isEqualTo(expectedIssuer)
 
-        assertThat(testSubject.certificate.basicConstraints).isEqualTo(-1)
-        assertThat(testSubject.certificate.keyUsage).isEqualTo(arrayOf(true, false, true, true, false, false, false, false, false))
-        assertThat(testSubject.certificate.criticalExtensionOIDs).hasSize(2)
-        assertThat(testSubject.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(Extension.subjectKeyIdentifier.id, Extension.authorityKeyIdentifier.id, Extension.extendedKeyUsage.id, Extension.subjectAlternativeName.id)
+        assertThat(certificateKeyPair.certificate.basicConstraints).isEqualTo(-1)
+        assertThat(certificateKeyPair.certificate.keyUsage).isEqualTo(
+            arrayOf(
+                true,
+                false,
+                true,
+                true,
+                false,
+                false,
+                false,
+                false,
+                false
+            )
+        )
+        assertThat(certificateKeyPair.certificate.criticalExtensionOIDs).hasSize(2)
+        assertThat(certificateKeyPair.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(
+            Extension.subjectKeyIdentifier.id,
+            Extension.authorityKeyIdentifier.id,
+            Extension.extendedKeyUsage.id,
+            Extension.subjectAlternativeName.id
+        )
 
-        assertThat(testSubject.certificate.subjectAlternativeNames).hasSize(2)
-        assertThat(testSubject.certificate.extendedKeyUsage).containsExactly("1.3.6.1.5.5.7.3.1")
+        assertThat(certificateKeyPair.certificate.subjectAlternativeNames).hasSize(2)
+        assertThat(certificateKeyPair.certificate.extendedKeyUsage).containsExactly("1.3.6.1.5.5.7.3.1")
     }
 
 }
