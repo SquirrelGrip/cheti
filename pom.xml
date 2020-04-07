@@ -3,7 +3,7 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.example</groupId>
+    <groupId>com.github.squirrelgrip</groupId>
     <artifactId>cheti</artifactId>
     <version>1.0.1-SNAPSHOT</version>
     <packaging>jar</packaging>
