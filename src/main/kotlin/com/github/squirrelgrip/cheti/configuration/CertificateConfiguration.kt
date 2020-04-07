@@ -1,6 +1,7 @@
 package com.github.squirrelgrip.cheti.configuration
 
 import java.io.File
+import java.time.Period
 
 
 data class CertificateConfiguration(
@@ -10,10 +11,12 @@ data class CertificateConfiguration(
     val location: String,
     val subject: Map<String, String> = emptyMap(),
     val issuer: String = "",
-    val extensions: ExtensionsConfiguration
+    val validFor: String = "1Y",
+    val extensions: ExtensionsConfiguration? = null
 ) {
     val certificateFile: File by lazy { File(File(location, name), "$name.crt") }
     val keyFile: File by lazy { File(File(location, name), "$name.key") }
+    val validDuration: Period = Period.parse("P${validFor}")
 
     fun validate(): List<String> {
         val errors = mutableListOf<String>()

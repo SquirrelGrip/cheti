@@ -27,6 +27,7 @@ internal class ChetiTest {
             "cn" to "RootCA"
         ),
         "",
+        "1D",
         ExtensionsConfiguration()
     )
     val signingCertificateConfiguration = CertificateConfiguration(
@@ -42,6 +43,7 @@ internal class ChetiTest {
             "cn" to "SigningCA"
         ),
         "RootCA",
+        "1D",
         ExtensionsConfiguration()
     )
     val serverCertificateConfiguration = CertificateConfiguration(
@@ -53,6 +55,7 @@ internal class ChetiTest {
             "cn" to "Server"
         ),
         "SigningCA",
+        "1D",
         ExtensionsConfiguration(
             AltSubjectExtensionConfiguration(
                 false, arrayOf(

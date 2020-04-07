@@ -35,7 +35,7 @@ abstract class BaseCertificateGenerator(
     abstract fun create(keyPair: KeyPair): X509Certificate
 
     open fun addAdditionalExtensions(certificateBuilder: JcaX509v3CertificateBuilder) {
-        certificateConfiguration.extensions.getExtensions().forEach {
+        certificateConfiguration.extensions?.getExtensions()?.forEach {
             certificateBuilder.addExtension(it)
         }
     }
@@ -59,7 +59,7 @@ abstract class BaseCertificateGenerator(
     ): JcaX509v3CertificateBuilder {
         val fromDate = Instant.now()
         val tillDate =
-            fromDate.atOffset(ZoneOffset.UTC).plusYears(1).withSecond(0).withMinute(0).withHour(12).toInstant()
+            fromDate.atOffset(ZoneOffset.UTC).plus(certificateConfiguration.validDuration).toInstant()
         return JcaX509v3CertificateBuilder(
             getIssuerPrincipal(),
             serialNumber,

@@ -16,6 +16,7 @@ internal class CertificateConfigurationTest {
         "target/certs",
         emptyMap(),
         "issuer",
+        "1D",
         ExtensionsConfiguration()
     )
     val certificateFile = File(File("target/certs/Test"), "Test.crt")
