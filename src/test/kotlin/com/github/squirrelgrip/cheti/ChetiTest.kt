@@ -1,9 +1,9 @@
 package com.github.squirrelgrip.cheti
 
 import com.github.squirrelgrip.cheti.configuration.*
+import com.github.squirrelgrip.cheti.loader.CertificateLoader
 import org.assertj.core.api.AssertionsForInterfaceTypes.assertThat
 import org.bouncycastle.asn1.x509.Extension
-import org.bouncycastle.asn1.x509.GeneralName
 import org.junit.jupiter.api.Test
 
 
@@ -11,7 +11,8 @@ internal class ChetiTest {
     private val commonConfiguration: CommonConfiguration = CommonConfiguration(
         "."
     )
-    val testSubject: CertificateLoader = CertificateLoader(commonConfiguration)
+    val testSubject: CertificateLoader =
+        CertificateLoader(commonConfiguration)
 
     val location = "target/certs"
     val rootCertificateConfiguration = CertificateConfiguration(

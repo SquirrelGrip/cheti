@@ -1,6 +1,6 @@
 package com.github.squirrelgrip.cheti.generator
 
-import com.github.squirrelgrip.cheti.CertificateLoader
+import com.github.squirrelgrip.cheti.loader.CertificateLoader
 import com.github.squirrelgrip.cheti.configuration.CertificateConfiguration
 import org.bouncycastle.asn1.x509.AuthorityKeyIdentifier
 import org.bouncycastle.asn1.x509.Extension
@@ -14,7 +14,6 @@ import org.bouncycastle.pkcs.jcajce.JcaPKCS10CertificationRequestBuilder
 import java.security.KeyPair
 import java.security.PublicKey
 import java.security.cert.X509Certificate
-import javax.security.auth.x500.X500Principal
 
 abstract class BaseEndEntityCertificateGenerator(
     certificateLoader: CertificateLoader,

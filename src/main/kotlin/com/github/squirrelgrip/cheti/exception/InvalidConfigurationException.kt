@@ -1,4 +1,4 @@
-package com.github.squirrelgrip.cheti
+package com.github.squirrelgrip.cheti.exception
 
 class InvalidConfigurationException : Exception() {
 
