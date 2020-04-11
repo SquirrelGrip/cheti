@@ -1,6 +1,8 @@
 package com.github.squirrelgrip.cheti.configuration
 
+import com.github.squirrelgrip.cheti.extension.toCertificate
 import java.io.File
+import java.time.Instant
 import java.time.Period
 
 
@@ -60,6 +62,10 @@ data class CertificateConfiguration(
 
     fun shouldCreate(): Boolean {
         if (certificateFile.exists() && keyFile.exists()) {
+            if (generate == GenerationType.EXPIRED) {
+                val certificate = certificateFile.toCertificate()
+                return certificate.notAfter.toInstant().isBefore(Instant.now().plusSeconds(600))
+            }
             return generate == GenerationType.ALWAYS
         }
         return generate != GenerationType.NEVER

@@ -1,10 +1,9 @@
-package com.github.squirrelgrip.cheti
+package com.github.squirrelgrip.cheti.loader
 
 import com.github.squirrelgrip.cheti.configuration.KeyStoreConfiguration
 import com.github.squirrelgrip.extensions.file.toOutputStream
 import java.security.KeyStore
 import java.security.PrivateKey
-import java.security.cert.Certificate
 
 class KeyStoreLoader(
     val certificateLoader: CertificateLoader,

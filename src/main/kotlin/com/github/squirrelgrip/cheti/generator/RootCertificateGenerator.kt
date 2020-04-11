@@ -1,6 +1,6 @@
 package com.github.squirrelgrip.cheti.generator
 
-import com.github.squirrelgrip.cheti.CertificateLoader
+import com.github.squirrelgrip.cheti.loader.CertificateLoader
 import com.github.squirrelgrip.cheti.configuration.CertificateConfiguration
 import org.bouncycastle.asn1.x509.*
 import org.bouncycastle.cert.jcajce.JcaX509v3CertificateBuilder

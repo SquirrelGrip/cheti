@@ -1,8 +1,8 @@
-package com.github.squirrelgrip.cheti
+package com.github.squirrelgrip.cheti.loader
 
+import com.github.squirrelgrip.cheti.model.CertificateKeyPair
+import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
 import com.github.squirrelgrip.cheti.configuration.ChainConfiguration
-import java.security.cert.Certificate
-import java.security.cert.X509Certificate
 
 class ChainLoader(
     private val certificateLoader: CertificateLoader

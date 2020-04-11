@@ -1,6 +1,10 @@
 package com.github.squirrelgrip.cheti
 
 import com.github.squirrelgrip.cheti.configuration.ChetiConfiguration
+import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
+import com.github.squirrelgrip.cheti.loader.CertificateLoader
+import com.github.squirrelgrip.cheti.loader.ChainLoader
+import com.github.squirrelgrip.cheti.loader.KeyStoreLoader
 import com.github.squirrelgrip.cheti.template.TemplateProvider
 import com.github.squirrelgrip.cheti.template.VelocityProvider
 import com.github.squirrelgrip.extensions.io.toReader
@@ -8,7 +12,6 @@ import com.github.squirrelgrip.extensions.json.toInstance
 import java.io.File
 import java.io.InputStream
 import java.net.InetAddress
-
 
 class Cheti(
     val templateProvider: TemplateProvider = VelocityProvider()
@@ -35,7 +38,8 @@ class Cheti(
 
     fun execute(chetiConfiguration: ChetiConfiguration) {
         validate(chetiConfiguration)
-        val certificateLoader = CertificateLoader(chetiConfiguration.common)
+        val certificateLoader =
+            CertificateLoader(chetiConfiguration.common)
         chetiConfiguration.certificates.forEach {
             certificateLoader.load(it)
         }
@@ -43,12 +47,12 @@ class Cheti(
         chetiConfiguration.chains.forEach {
             chainLoader.load(it)
         }
-        val keyStoreLoader = KeyStoreLoader(certificateLoader, chainLoader)
+        val keyStoreLoader =
+            KeyStoreLoader(certificateLoader, chainLoader)
         chetiConfiguration.keystores.forEach {
             keyStoreLoader.load(it)
         }
     }
-
 }
 
 fun main(args: Array<String>) {
@@ -62,8 +66,15 @@ fun main(args: Array<String>) {
     cheti.execute(chetiConfiguration)
 }
 
-fun getLocalAddress() =
-    InetAddress.getAllByName(getHostName()).first { it.isSiteLocalAddress }.hostAddress
+fun getLocalAddress(): String? {
+    val arrayOfInetAddress = InetAddress.getAllByName(getHostName())
+    return arrayOfInetAddress.map {
+        println(it.hostAddress)
+        it
+    }.first {
+        it.isSiteLocalAddress
+    }.hostAddress
+}
 
 fun getHostName() =
     InetAddress.getLocalHost().hostName
