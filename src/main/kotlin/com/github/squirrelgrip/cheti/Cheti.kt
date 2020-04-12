@@ -7,26 +7,43 @@ import com.github.squirrelgrip.cheti.loader.ChainLoader
 import com.github.squirrelgrip.cheti.loader.KeyStoreLoader
 import com.github.squirrelgrip.cheti.template.TemplateProvider
 import com.github.squirrelgrip.cheti.template.VelocityProvider
+import com.github.squirrelgrip.extensions.file.toInputStream
+import com.github.squirrelgrip.extensions.file.toReader
 import com.github.squirrelgrip.extensions.io.toReader
 import com.github.squirrelgrip.extensions.json.toInstance
 import java.io.File
 import java.io.InputStream
+import java.io.Reader
 import java.net.InetAddress
 
 class Cheti(
-    val templateProvider: TemplateProvider = VelocityProvider()
+    val chetiConfiguration: ChetiConfiguration
 ) {
-    fun loadConfiguration(file: File, context: Map<String, String> = emptyMap()): ChetiConfiguration {
-        return templateProvider.loadTemplate(file, context).toInstance()
-    }
 
-    fun loadConfiguration(fileName: String, context: Map<String, String> = emptyMap()): ChetiConfiguration {
-        return loadConfiguration(File(fileName), context)
-    }
+    constructor(
+        file: File,
+        context: Map<String, String> = emptyMap(),
+        templateProvider: TemplateProvider = VelocityProvider()
+    ) : this(file.toReader(), context, templateProvider)
 
-    fun loadConfiguration(inputStream: InputStream, context: Map<String, String> = emptyMap()): ChetiConfiguration {
-        return templateProvider.loadTemplate(inputStream.toReader(), "cheti", context).toInstance()
-    }
+    constructor(
+        fileName: String,
+        context: Map<String, String> = emptyMap(),
+        templateProvider: TemplateProvider = VelocityProvider()
+    ) : this(File(fileName), context, templateProvider)
+
+    constructor(
+        inputStream: InputStream,
+        context: Map<String, String> = emptyMap(),
+        templateProvider: TemplateProvider = VelocityProvider()
+    ) : this(inputStream.toReader(), context, templateProvider)
+
+    constructor(
+        reader: Reader,
+        context: Map<String, String> = emptyMap(),
+        templateProvider: TemplateProvider = VelocityProvider()
+    ) : this(templateProvider.loadTemplate(reader, "cheti", context).toInstance<ChetiConfiguration>())
+
 
     private fun validate(chetiConfiguration: ChetiConfiguration) {
         val errors = chetiConfiguration.validate()
@@ -36,7 +53,7 @@ class Cheti(
         }
     }
 
-    fun execute(chetiConfiguration: ChetiConfiguration) {
+    fun execute() {
         validate(chetiConfiguration)
         val certificateLoader =
             CertificateLoader(chetiConfiguration.common)
@@ -56,16 +73,13 @@ class Cheti(
 }
 
 fun main(args: Array<String>) {
-    val cheti = Cheti()
     val configFile = args[0]
     val context = mapOf(
         "IP_ADDRESS" to getLocalAddress(),
         "HOSTNAME" to getHostName()
     )
-    val chetiConfiguration = cheti.loadConfiguration(
-        configFile, context
-    )
-    cheti.execute(chetiConfiguration)
+    val cheti = Cheti(configFile, context)
+    cheti.execute()
 }
 
 fun getLocalAddress(): String {
@@ -78,7 +92,7 @@ fun getLocalAddress(): String {
     }.hostAddress
 }
 
-fun getHostName() =
+fun getHostName(): String =
     InetAddress.getLocalHost().hostName
 
 
