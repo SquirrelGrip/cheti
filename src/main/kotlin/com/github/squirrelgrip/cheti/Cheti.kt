@@ -57,16 +57,18 @@ class Cheti(
 
 fun main(args: Array<String>) {
     val cheti = Cheti()
-    val chetiConfiguration = cheti.loadConfiguration(args[0],
-        mapOf(
-            "IP_ADDRESS" to getLocalAddress(),
-            "HOSTNAME" to getHostName()
-        )
+    val configFile = args[0]
+    val context = mapOf(
+        "IP_ADDRESS" to getLocalAddress(),
+        "HOSTNAME" to getHostName()
+    )
+    val chetiConfiguration = cheti.loadConfiguration(
+        configFile, context
     )
     cheti.execute(chetiConfiguration)
 }
 
-fun getLocalAddress(): String? {
+fun getLocalAddress(): String {
     val arrayOfInetAddress = InetAddress.getAllByName(getHostName())
     return arrayOfInetAddress.map {
         println(it.hostAddress)
