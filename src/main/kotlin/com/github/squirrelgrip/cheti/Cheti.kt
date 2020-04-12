@@ -68,7 +68,7 @@ fun main(args: Array<String>) {
     cheti.execute(chetiConfiguration)
 }
 
-fun getLocalAddress(): String? {
+fun getLocalAddress(): String {
     val arrayOfInetAddress = InetAddress.getAllByName(getHostName())
     return arrayOfInetAddress.map {
         println(it.hostAddress)
