@@ -45,6 +45,12 @@ fun KeyPair.write(writer: Writer) {
     pemWriter.close()
 }
 
+fun KeyPair.write(writer: Writer, password: String) {
+    val pemWriter = PemWriter(writer)
+    pemWriter.writeObject(PemObject("PRIVATE KEY", this.private.encoded))
+    pemWriter.close()
+}
+
 fun File.toCertificate(): X509Certificate =
     CertificateFactory.getInstance("X.509").generateCertificate(toInputStream()) as X509Certificate
 

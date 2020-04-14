@@ -1,11 +1,12 @@
 package com.github.squirrelgrip.cheti.configuration
 
+import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
 import java.io.File
 
 data class KeyStoreConfiguration(
     val name: String,
     val type: String = "JKS",
-    val password: String = "password",
+    private val password: String = "pass:password",
     val location: String = ".",
     val chains: List<String> = emptyList()
 ) {
@@ -22,5 +23,15 @@ data class KeyStoreConfiguration(
             }
         }
         return errors.toList()
+    }
+
+    fun password(): CharArray {
+        val split = password.split(":")
+        return when (split[0]) {
+            "pass" -> split[1]
+            "env" -> System.getenv(split[1])
+            "file" -> File(split[1]).readText()
+            else -> throw InvalidConfigurationException("Unknown password prefix; should be one of pass:, env: or file:")
+        }.toCharArray()
     }
 }
