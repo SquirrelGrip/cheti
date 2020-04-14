@@ -3,6 +3,11 @@ package com.github.squirrelgrip.cheti.extension
 import com.github.squirrelgrip.extensions.file.toInputStream
 import com.github.squirrelgrip.extensions.file.toReader
 import com.github.squirrelgrip.extensions.file.toWriter
+import org.bouncycastle.crypto.BufferedBlockCipher
+import org.bouncycastle.crypto.engines.AESEngine
+import org.bouncycastle.crypto.modes.CFBBlockCipher
+import org.bouncycastle.crypto.params.KeyParameter
+import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.io.pem.PemObject
 import org.bouncycastle.util.io.pem.PemReader
 import org.bouncycastle.util.io.pem.PemWriter
@@ -16,6 +21,7 @@ import java.security.PrivateKey
 import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.security.spec.PKCS8EncodedKeySpec
+
 
 fun KeyStore.write(directory: File = rootDir(), name: String = "keystore.jks", password: String = "password") {
     FileOutputStream(File(directory, "$name")).use { fileOutputStream ->
@@ -40,12 +46,6 @@ fun KeyPair.write(file: File) {
 }
 
 fun KeyPair.write(writer: Writer) {
-    val pemWriter = PemWriter(writer)
-    pemWriter.writeObject(PemObject("PRIVATE KEY", this.private.encoded))
-    pemWriter.close()
-}
-
-fun KeyPair.write(writer: Writer, password: String) {
     val pemWriter = PemWriter(writer)
     pemWriter.writeObject(PemObject("PRIVATE KEY", this.private.encoded))
     pemWriter.close()

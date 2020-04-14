@@ -84,10 +84,7 @@ fun main(args: Array<String>) {
 
 fun getLocalAddress(): String {
     val arrayOfInetAddress = InetAddress.getAllByName(getHostName())
-    return arrayOfInetAddress.map {
-        println(it.hostAddress)
-        it
-    }.first {
+    return arrayOfInetAddress.first {
         it.isSiteLocalAddress
     }.hostAddress
 }
