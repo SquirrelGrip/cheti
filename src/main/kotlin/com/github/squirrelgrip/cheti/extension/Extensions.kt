@@ -4,11 +4,6 @@ import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
 import com.github.squirrelgrip.extensions.file.toInputStream
 import com.github.squirrelgrip.extensions.file.toReader
 import com.github.squirrelgrip.extensions.file.toWriter
-import org.bouncycastle.crypto.BufferedBlockCipher
-import org.bouncycastle.crypto.engines.AESEngine
-import org.bouncycastle.crypto.modes.CFBBlockCipher
-import org.bouncycastle.crypto.params.KeyParameter
-import org.bouncycastle.crypto.params.ParametersWithIV
 import org.bouncycastle.util.io.pem.PemObject
 import org.bouncycastle.util.io.pem.PemReader
 import org.bouncycastle.util.io.pem.PemWriter
@@ -71,11 +66,12 @@ fun rootDir(name: String = "target/certs") = File(name).apply {
 }
 
 fun String.password(): CharArray {
-    val split = this.split(":")
-    return when (split[0]) {
-        "pass" -> split[1]
-        "env" -> System.getenv(split[1])
-        "file" -> File(split[1]).readText()
+    val prefix = this.split(":")[]
+    val value = this.substring(prefix.length + 1)
+    return when (prefix) {
+        "pass" -> value
+        "env" -> System.getenv(value)
+        "file" -> File(value).readText()
         else -> throw InvalidConfigurationException("Unknown password prefix; should be one of pass:, env: or file:")
     }.toCharArray()
 }
