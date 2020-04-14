@@ -22,7 +22,7 @@ class KeyStoreLoader(
                 }
             }
             store(keyStoreConfiguration.keyStoreFile.toOutputStream(), keyStoreConfiguration.password())
-            File("${keyStoreConfiguration.keyStoreFile.absolutePath}.pwd").writeText(keyStoreConfiguration.password().toString())
+            File("${keyStoreConfiguration.keyStoreFile.absolutePath}.pwd").writeText(String(keyStoreConfiguration.password()))
         }
     }
 
