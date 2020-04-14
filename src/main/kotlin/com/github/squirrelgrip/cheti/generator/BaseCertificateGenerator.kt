@@ -30,7 +30,7 @@ abstract class BaseCertificateGenerator(
         }
     }
 
-    fun getIssuer(): CertificateKeyPair = certificateLoader[certificateConfiguration.issuer] ?: throw InvalidConfigurationException()
+    fun getIssuer(): CertificateKeyPair = certificateLoader[certificateConfiguration.issuer!!] ?: throw InvalidConfigurationException()
 
     abstract fun create(keyPair: KeyPair): X509Certificate
 
@@ -70,7 +70,7 @@ abstract class BaseCertificateGenerator(
         )
     }
 
-    fun getSubjectPrincipal(): X500Principal = generateDistinguishedName(certificateConfiguration.subject)
+    fun getSubjectPrincipal(): X500Principal = generateDistinguishedName(certificateConfiguration.subject!!)
 
     open fun getIssuerPrincipal() = getIssuer().certificate.subjectX500Principal
 

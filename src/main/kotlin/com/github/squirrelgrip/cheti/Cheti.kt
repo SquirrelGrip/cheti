@@ -7,7 +7,6 @@ import com.github.squirrelgrip.cheti.loader.ChainLoader
 import com.github.squirrelgrip.cheti.loader.KeyStoreLoader
 import com.github.squirrelgrip.cheti.template.TemplateProvider
 import com.github.squirrelgrip.cheti.template.VelocityProvider
-import com.github.squirrelgrip.extensions.file.toInputStream
 import com.github.squirrelgrip.extensions.file.toReader
 import com.github.squirrelgrip.extensions.io.toReader
 import com.github.squirrelgrip.extensions.json.toInstance
@@ -17,8 +16,9 @@ import java.io.Reader
 import java.net.InetAddress
 
 class Cheti(
-    val chetiConfiguration: ChetiConfiguration
+    unpreparedChetiConfiguration: ChetiConfiguration
 ) {
+    val chetiConfiguration: ChetiConfiguration = unpreparedChetiConfiguration.prepare()
 
     constructor(
         file: File,
@@ -45,18 +45,17 @@ class Cheti(
     ) : this(templateProvider.loadTemplate(reader, "cheti", context).toInstance<ChetiConfiguration>())
 
 
-    private fun validate(chetiConfiguration: ChetiConfiguration) {
+    private fun validate() {
         val errors = chetiConfiguration.validate()
-        if (!errors.isEmpty()) {
+        if (errors.isNotEmpty()) {
             errors.forEach { println(it) }
             throw InvalidConfigurationException()
         }
     }
 
     fun execute() {
-        validate(chetiConfiguration)
-        val certificateLoader =
-            CertificateLoader(chetiConfiguration.common)
+        validate()
+        val certificateLoader = CertificateLoader(chetiConfiguration.common)
         chetiConfiguration.certificates.forEach {
             certificateLoader.load(it)
         }
@@ -64,8 +63,7 @@ class Cheti(
         chetiConfiguration.chains.forEach {
             chainLoader.load(it)
         }
-        val keyStoreLoader =
-            KeyStoreLoader(certificateLoader, chainLoader)
+        val keyStoreLoader = KeyStoreLoader(certificateLoader, chainLoader)
         chetiConfiguration.keystores.forEach {
             keyStoreLoader.load(it)
         }
@@ -83,8 +81,7 @@ fun main(args: Array<String>) {
 }
 
 fun getLocalAddress(): String {
-    val arrayOfInetAddress = InetAddress.getAllByName(getHostName())
-    return arrayOfInetAddress.first {
+    return InetAddress.getAllByName(getHostName()).first {
         it.isSiteLocalAddress
     }.hostAddress
 }
