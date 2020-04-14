@@ -17,10 +17,10 @@ class KeyStoreLoader(
                 if (chainCertificateKeyPair != null && chainCertificateKeyPair.isNotEmpty()) {
                     val chain = chainCertificateKeyPair.map { it.certificate }.toTypedArray()
                     val privateKey: PrivateKey = chainCertificateKeyPair.first().keyPair.private
-                    this.setKeyEntry(alias, privateKey, keyStoreConfiguration.password.toCharArray(), chain)
+                    this.setKeyEntry(alias, privateKey, keyStoreConfiguration.password(), chain)
                 }
             }
-            store(keyStoreConfiguration.keyStoreFile.toOutputStream(), keyStoreConfiguration.password.toCharArray())
+            store(keyStoreConfiguration.keyStoreFile.toOutputStream(), keyStoreConfiguration.password())
         }
     }
 

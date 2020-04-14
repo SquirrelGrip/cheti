@@ -1,5 +1,6 @@
 package com.github.squirrelgrip.cheti.exception
 
-class InvalidConfigurationException : Exception() {
+class InvalidConfigurationException(message: String) : Exception(message) {
+    constructor(): this("Invalid Configuration")
 
 }
