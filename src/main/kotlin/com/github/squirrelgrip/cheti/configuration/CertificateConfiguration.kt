@@ -9,16 +9,25 @@ import java.time.Period
 data class CertificateConfiguration(
     val name: String,
     val type: CertificateType,
-    val generate: GenerationType = GenerationType.ONCE,
-    val location: String,
-    val subject: Map<String, String> = emptyMap(),
-    val issuer: String = "",
-    val validFor: String = "1Y",
+    val generate: GenerationType? = null,
+    val location: String? = null,
+    val subject: Map<String, String>? = null,
+    val issuer: String? = null,
+    val validFor: String? = null,
     val extensions: ExtensionsConfiguration? = null
 ) {
     val certificateFile: File by lazy { File(File(location, name), "$name.crt") }
     val keyFile: File by lazy { File(File(location, name), "$name.key") }
-    val validDuration: Period = Period.parse("P${validFor}")
+    val validDuration: Period by lazy { Period.parse("P${validFor}") }
+
+    fun prepare(commonConfiguration: CommonConfiguration): CertificateConfiguration {
+        return this.copy(
+            generate = generate ?: commonConfiguration.generate,
+            location = location ?: commonConfiguration.location,
+            issuer = issuer ?: commonConfiguration.issuer,
+            validFor = validFor ?: commonConfiguration.validFor
+        )
+    }
 
     fun validate(): List<String> {
         val errors = mutableListOf<String>()
@@ -34,10 +43,10 @@ data class CertificateConfiguration(
     private fun validateIssuer(): List<String> {
         val newErrors = mutableListOf<String>()
         if (type != CertificateType.ROOT) {
-            if (issuer.isBlank()) {
-                newErrors.add("${name} certificate must have an issuer.")
+            if (issuer.isNullOrBlank()) {
+                newErrors.add("$name certificate must have an issuer.")
             } else if (issuer == name) {
-                newErrors.add("${name} certificate cannot be an issuer for itself.")
+                newErrors.add("$name certificate cannot be an issuer for itself.")
             }
         }
         return newErrors.toList()

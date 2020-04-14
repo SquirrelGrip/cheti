@@ -7,8 +7,8 @@ import java.io.File
 data class KeyStoreConfiguration(
     val name: String,
     val type: String = "JKS",
-    private val password: String = "pass:password",
-    val location: String = ".",
+    val password: String?,
+    val location: String?,
     val chains: List<String> = emptyList()
 ) {
     val keyStoreFile: File = File(location, name)
@@ -20,11 +20,18 @@ data class KeyStoreConfiguration(
         }
         chains.forEach {
             if (!chainNames.contains(it)) {
-                errors.add("Chain contains unknown certificate ${it}.")
+                errors.add("Chain contains unknown certificate $it.")
             }
         }
         return errors.toList()
     }
 
-    fun password() = password.password()
+    fun password() = password!!.password()
+
+    fun prepare(common: CommonConfiguration):KeyStoreConfiguration {
+        return this.copy(
+            password = password ?: common.password,
+            location = location ?: common.location
+        )
+    }
 }
