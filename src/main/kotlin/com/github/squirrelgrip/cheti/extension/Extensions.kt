@@ -66,7 +66,7 @@ fun rootDir(name: String = "target/certs") = File(name).apply {
 }
 
 fun String.password(): CharArray {
-    val prefix = this.split(":")[]
+    val prefix = this.split(":").first()
     val value = this.substring(prefix.length + 1)
     return when (prefix) {
         "pass" -> value
