@@ -66,12 +66,16 @@ fun rootDir(name: String = "target/certs") = File(name).apply {
 }
 
 fun String.password(): CharArray {
-    val prefix = this.split(":").first()
-    val value = this.substring(prefix.length + 1)
-    return when (prefix) {
-        "pass" -> value
-        "env" -> System.getenv(value)
-        "file" -> File(value).readText()
-        else -> throw InvalidConfigurationException("Unknown password prefix; should be one of pass:, env: or file:")
-    }.toCharArray()
+    try {
+        val prefix = this.split(":").first()
+        val value = this.substring(prefix.length + 1)
+        return when (prefix) {
+            "pass" -> value
+            "env" -> System.getenv(value)
+            "file" -> File(value).readText()
+            else -> throw InvalidConfigurationException("Unknown password prefix; should be one of pass:, env: or file:")
+        }.toCharArray()
+    } catch (e: StringIndexOutOfBoundsException) {
+        return this.toCharArray()
+    }
 }
