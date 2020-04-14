@@ -1,5 +1,6 @@
 package com.github.squirrelgrip.cheti.extension
 
+import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
 import com.github.squirrelgrip.extensions.file.toInputStream
 import com.github.squirrelgrip.extensions.file.toReader
 import com.github.squirrelgrip.extensions.file.toWriter
@@ -67,4 +68,14 @@ fun certDir(certName: String) = File(rootDir(), certName).apply {
 
 fun rootDir(name: String = "target/certs") = File(name).apply {
     mkdirs()
+}
+
+fun String.password(): CharArray {
+    val split = this.split(":")
+    return when (split[0]) {
+        "pass" -> split[1]
+        "env" -> System.getenv(split[1])
+        "file" -> File(split[1]).readText()
+        else -> throw InvalidConfigurationException("Unknown password prefix; should be one of pass:, env: or file:")
+    }.toCharArray()
 }
