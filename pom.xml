@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
 
@@ -42,7 +43,7 @@
         <bouncycastle.version>1.65</bouncycastle.version>
         <extensions.version>1.0.6</extensions.version>
         <junit-jupiter.version>5.6.2</junit-jupiter.version>
-        <kotlin.version>1.3.71</kotlin.version>
+        <kotlin.version>1.3.72</kotlin.version>
         <velocity.version>1.7</velocity.version>
     </properties>
 
@@ -97,6 +98,7 @@
             <plugin>
                 <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-maven-plugin</artifactId>
+                <version>${kotlin.version}</version>
                 <configuration>
                     <args>
                         <arg>-Xjsr305=strict</arg>
@@ -247,6 +249,16 @@
                         <sourceDirectory>src/main/kotlin</sourceDirectory>
                     </sourceDirectories>
                     <jdkVersion>8</jdkVersion>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.github.squirrelgrip</groupId>
+                <artifactId>travis-maven-plugin</artifactId>
+                <version>1.0.0</version>
+                <configuration>
+                    <token>${env.TRAVIS_TOKEN}</token>
+                    <slug>${project.artifactId}</slug>
+                    <user>SquirrelGrip</user>
                 </configuration>
             </plugin>
         </plugins>
