@@ -1,9 +1,9 @@
 package com.github.squirrelgrip.cheti.extension
 
 import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
-import com.github.squirrelgrip.extensions.file.toInputStream
-import com.github.squirrelgrip.extensions.file.toReader
-import com.github.squirrelgrip.extensions.file.toWriter
+import com.github.squirrelgrip.extension.file.toInputStream
+import com.github.squirrelgrip.extension.file.toReader
+import com.github.squirrelgrip.extension.file.toWriter
 import org.bouncycastle.util.io.pem.PemObject
 import org.bouncycastle.util.io.pem.PemReader
 import org.bouncycastle.util.io.pem.PemWriter

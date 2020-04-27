@@ -1,7 +1,7 @@
 package com.github.squirrelgrip.cheti.loader
 
 import com.github.squirrelgrip.cheti.configuration.KeyStoreConfiguration
-import com.github.squirrelgrip.extensions.file.toOutputStream
+import com.github.squirrelgrip.extension.file.toOutputStream
 import java.io.File
 import java.security.KeyStore
 import java.security.PrivateKey

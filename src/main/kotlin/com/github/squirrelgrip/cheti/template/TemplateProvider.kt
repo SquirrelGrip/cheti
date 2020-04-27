@@ -1,6 +1,6 @@
 package com.github.squirrelgrip.cheti.template
 
-import com.github.squirrelgrip.extensions.file.toReader
+import com.github.squirrelgrip.extension.file.toReader
 import java.io.File
 import java.io.Reader
 

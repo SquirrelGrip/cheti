@@ -7,9 +7,9 @@ import com.github.squirrelgrip.cheti.loader.ChainLoader
 import com.github.squirrelgrip.cheti.loader.KeyStoreLoader
 import com.github.squirrelgrip.cheti.template.TemplateProvider
 import com.github.squirrelgrip.cheti.template.VelocityProvider
-import com.github.squirrelgrip.extensions.file.toReader
-import com.github.squirrelgrip.extensions.io.toReader
-import com.github.squirrelgrip.extensions.json.toInstance
+import com.github.squirrelgrip.extension.file.toReader
+import com.github.squirrelgrip.extension.io.toReader
+import com.github.squirrelgrip.extension.json.toInstance
 import java.io.File
 import java.io.InputStream
 import java.io.Reader
