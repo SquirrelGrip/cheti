@@ -4,7 +4,7 @@ import com.github.squirrelgrip.cheti.model.CertificateKeyPair
 import com.github.squirrelgrip.cheti.loader.CertificateLoader
 import com.github.squirrelgrip.cheti.exception.InvalidConfigurationException
 import com.github.squirrelgrip.cheti.configuration.CertificateConfiguration
-import com.github.squirrelgrip.extensions.time.toDate
+import com.github.squirrelgrip.extension.time.toDate
 import org.bouncycastle.asn1.x500.X500NameBuilder
 import org.bouncycastle.asn1.x500.style.BCStyle
 import org.bouncycastle.asn1.x509.*
