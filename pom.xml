@@ -5,7 +5,7 @@
     <parent>
         <groupId>com.github.squirrelgrip</groupId>
         <artifactId>root</artifactId>
-        <version>1.0.7</version>
+        <version>1.0.8</version>
     </parent>
     <groupId>com.github.squirrelgrip</groupId>
     <artifactId>cheti</artifactId>
@@ -74,6 +74,9 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
@@ -82,12 +85,6 @@
             <plugin>
                 <groupId>com.github.squirrelgrip</groupId>
                 <artifactId>travis-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <configuration>
-                    <token>${env.TRAVIS_TOKEN}</token>
-                    <slug>${project.artifactId}</slug>
-                    <user>SquirrelGrip</user>
-                </configuration>
             </plugin>
         </plugins>
     </build>
