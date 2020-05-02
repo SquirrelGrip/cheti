@@ -4,3 +4,4 @@
 *.iml
 /bouncy-castle/
 cheti.json
+/travis/all.gpg
