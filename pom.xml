@@ -5,10 +5,10 @@
     <parent>
         <groupId>com.github.squirrelgrip</groupId>
         <artifactId>root</artifactId>
-        <version>1.0.8</version>
+        <version>1.0.9</version>
     </parent>
     <artifactId>cheti</artifactId>
-    <version>1.1.9</version>
+    <version>1.1.10</version>
     <packaging>jar</packaging>
 
     <name>${project.groupId}:${project.artifactId}</name>
@@ -22,7 +22,7 @@
     </scm>
 
     <properties>
-        <extensions.version>1.0.17</extensions.version>
+        <extensions.version>1.0.18</extensions.version>
     </properties>
 
     <dependencies>
