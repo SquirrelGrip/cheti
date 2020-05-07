@@ -5,13 +5,13 @@
     <parent>
         <groupId>com.github.squirrelgrip</groupId>
         <artifactId>root</artifactId>
-        <version>1.0.9</version>
+        <version>1.0.12</version>
     </parent>
     <artifactId>cheti</artifactId>
-    <version>1.1.10</version>
+    <version>1.1.11</version>
     <packaging>jar</packaging>
 
-    <name>${project.groupId}:${project.artifactId}</name>
+    <name>${project.artifactId}</name>
     <description>A Kotlin Key Generator</description>
     <url>https://www.github.com/squirrelgrip/cheti</url>
 
@@ -22,7 +22,7 @@
     </scm>
 
     <properties>
-        <extensions.version>1.0.18</extensions.version>
+        <extensions.version>1.0.19</extensions.version>
     </properties>
 
     <dependencies>
@@ -57,7 +57,7 @@
         </dependency>
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter-engine</artifactId>
             <scope>test</scope>
         </dependency>
     </dependencies>
