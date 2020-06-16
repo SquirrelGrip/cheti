@@ -18,7 +18,6 @@ import java.security.cert.CertificateFactory
 import java.security.cert.X509Certificate
 import java.security.spec.PKCS8EncodedKeySpec
 
-
 fun KeyStore.write(directory: File = rootDir(), name: String = "keystore.jks", password: String = "password") {
     FileOutputStream(File(directory, "$name")).use { fileOutputStream ->
         this.store(fileOutputStream, password.toCharArray())
