@@ -90,7 +90,7 @@ internal class ChetiTest {
                 false,
                 false,
                 false
-            )
+            ).toBooleanArray()
         )
 
         assertThat(certificateKeyPair.certificate.criticalExtensionOIDs).hasSize(2)
@@ -129,7 +129,7 @@ internal class ChetiTest {
                 false,
                 false,
                 false
-            )
+            ).toBooleanArray()
         )
 
         assertThat(certificateKeyPair.certificate.criticalExtensionOIDs).hasSize(2)
@@ -169,7 +169,7 @@ internal class ChetiTest {
                 false,
                 false,
                 false
-            )
+            ).toBooleanArray()
         )
         assertThat(certificateKeyPair.certificate.criticalExtensionOIDs).hasSize(2)
         assertThat(certificateKeyPair.certificate.nonCriticalExtensionOIDs).containsExactlyInAnyOrder(
