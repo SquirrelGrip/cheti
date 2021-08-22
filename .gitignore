@@ -6,3 +6,4 @@ bouncy-castle/
 cheti.json
 travis/all.gpg
 .DS_Store
+*.jar
