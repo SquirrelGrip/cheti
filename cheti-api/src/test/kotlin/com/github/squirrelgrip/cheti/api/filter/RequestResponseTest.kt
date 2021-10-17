@@ -1,5 +1,6 @@
 package com.github.squirrelgrip.cheti.api.filter
 
+import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.springframework.core.ParameterizedTypeReference
 import org.springframework.http.codec.ServerSentEvent
@@ -8,7 +9,7 @@ import java.time.LocalTime
 import javax.ws.rs.client.ClientBuilder
 import javax.ws.rs.client.WebTarget
 
-
+@Disabled
 internal class RequestResponseTest {
     @Test
     fun submitHttpAndReplay() {

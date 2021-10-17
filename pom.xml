@@ -4,7 +4,7 @@
     <parent>
         <groupId>com.github.squirrelgrip</groupId>
         <artifactId>dependencies</artifactId>
-        <version>1.2.10</version>
+        <version>1.2.23</version>
     </parent>
     <artifactId>cheti</artifactId>
     <version>1.2.1-SNAPSHOT</version>
@@ -19,11 +19,15 @@
         <module>cheti-api</module>
     </modules>
 
+    <properties>
+        <kotlin.compiler.incremental>false</kotlin.compiler.incremental>
+        <kotlin-extensions.version>1.2.5</kotlin-extensions.version>
+    </properties>
+
     <scm>
         <connection>scm:git:https://github.com/SquirrelGrip/cheti.git</connection>
         <developerConnection>scm:git:https://github.com/SquirrelGrip/cheti.git</developerConnection>
         <url>https://github.com/SquirrelGrip/cheti</url>
     </scm>
-
 
 </project>
