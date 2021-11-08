@@ -1,7 +1,9 @@
 # Project exclude paths
-/target/
-/.idea/
+target/
+.idea/
 *.iml
-/bouncy-castle/
+bouncy-castle/
 cheti.json
-/travis/all.gpg
+travis/all.gpg
+.DS_Store
+*.jar

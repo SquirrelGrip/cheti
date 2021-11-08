@@ -8,7 +8,7 @@ A generic key generation tool for automating generation of ROOT, Intermediate an
 Using a simple JSON configuration file, we can define a set of X509 Certificates that will be generated and then be used to secure a number of different services. The expiry of the certificates can be adjusted in order for the certificates to be used for a short period of time (usually for the time of the automated tests).
 
 ## Features
-+ Create self signed Root CA Certificate for Signing.
++ Create self-signed Root CA Certificate for Signing.
 + Create an Intermediate Signing Certificates for Signing.
 + Create Server certificates with altSubject extension.
 + Create basic Client certificates with altSubject extension.
@@ -149,3 +149,5 @@ This JSON file is loaded by Cheti and ...
 }
 ```
 
+Known Issues
+Bouncy Castle does not play well inside fat/uber jars. It want to be separate from your jar, so exclude it from the fat jar.
